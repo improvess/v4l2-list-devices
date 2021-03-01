@@ -2,6 +2,17 @@
 
 A single C++ header file containing a single function to list USB camera devices on linux using V4L2 and ioctl.
 
+## TL; DR;
+
+Copy file `include/list_devices.hpp` to your project and use it:
+
+```c++
+#include "list_devices.hpp"
+
+std::vector<v4l2::devices::DEVICE_INFO> devices;
+v4l2::devices::list(devices);
+```
+
 ## But why?
 
 This function provides a way to list devices without brute force probing the system.
@@ -10,7 +21,7 @@ In addition, and maybe more important, the resulting data contain USB bus port i
 
 ## how to use
 
-- Copy include/list_devices.hpp to your project's include folder
+- Copy `include/list_devices.hpp` to your project's include folder
 - Include the header with `#include "list_devices.hpp"`
 - call `v4l2::devices::list(devices)`
 - vòi la!
