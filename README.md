@@ -1,6 +1,6 @@
 # v4l2-list-devices
 
-A single header file containing a single function to list USB camera devices on linux using V4L2 and ioctl
+A single C++ header file containing a single function to list USB camera devices on linux using V4L2 and ioctl.
 
 ## But why?
 
