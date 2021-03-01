@@ -10,14 +10,16 @@ In addition, and maybe more important, the resulting data contain USB bus port i
 
 ## how to use
 
-- Copy list_devices.hpp to your project's include folder
+- Copy include/list_devices.hpp to your project's include folder
 - Include the header with `#include "list_devices.hpp"`
 - call `v4l2::devices::list(devices)`
-- vòi la
+- vòi la!
 
-Check out the following example:
+Note that this repo contains a CMakeLists.txt file which is useful only for build the usage example. It is noteworthy that you needn't build nothing in order to use the header `list_devices.hpp` in your projects! Duh!
 
 ## Example
+
+This is basically the contents of file `main.cpp` 
 
 ```c++
 #include <iostream>
@@ -43,6 +45,10 @@ int main() {
 
 }
 ```
+
+# C++ 17
+
+`list_devices.hpp` uses features from c++17. I'm a little tired right now to downgrade it to C++11. Let me know if you need it to run on a C++11 settings and I'll find time to fix it for you!
 
 ## Credits
 
