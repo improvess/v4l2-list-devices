@@ -56,4 +56,4 @@ This code is based on the `list_devices()` function from [v4l2-ctl](https://gith
 
 ## License
 
-This short code is shared with a very permissive MIT liceense. Check out the licensing file for more details.
+This short code is shared with a very permissive MIT license. Check out the licensing section for more details.
