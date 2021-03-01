@@ -52,7 +52,7 @@ namespace v4l2
             std::vector<std::string> device_paths;
         };
 
-        void list(std::vector<DEVICE_INFO> &devices)
+        inline void list(std::vector<DEVICE_INFO> &devices)
         {
 
             std::vector<std::string> files;
