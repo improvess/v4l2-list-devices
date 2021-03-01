@@ -57,9 +57,33 @@ int main() {
 }
 ```
 
-# C++ 17
+I just ran this example on my system (Ubuntu 20.04 running on Virtualbox) with two attached webcams and this is the output:
 
-`list_devices.hpp` uses features from c++17. I'm a little tired right now to downgrade it to C++11. Let me know if you need it to run on a C++11 settings and I'll find time to fix it for you!
+```bash
+$ ./list-devices 
+VirtualBox Webcam - Integrated  at usb-0000:00:0c.0-2 is attached to
+/dev/video0
+/dev/video1
+
+VirtualBox Webcam - HD Pro Webc at usb-0000:00:0c.0-3 is attached to
+/dev/video2
+/dev/video3
+
+```
+
+Which is basically the same output of v4l2-ctl:
+
+```bash
+$ v4l2-ctl --list-devices
+VirtualBox Webcam - Integrated  (usb-0000:00:0c.0-2):
+        /dev/video0
+        /dev/video1
+
+VirtualBox Webcam - HD Pro Webc (usb-0000:00:0c.0-3):
+        /dev/video2
+        /dev/video3
+
+```
 
 ## Credits
 

@@ -17,7 +17,6 @@
  * ----------------------------------------------------------------------
  */
 
-
 #ifndef LIST_DEVICES_H_
 #define LIST_DEVICES_H_
 
@@ -30,7 +29,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <algorithm>
+#include <algorithm> //for sorting
 
 #include <linux/types.h>
 #include <linux/v4l2-common.h>
@@ -39,8 +38,7 @@
 #include <linux/media.h>
 #include <sys/ioctl.h>
 
-#include <filesystem>
-namespace fs = std::filesystem;
+#include <dirent.h> //to list dir's content
 
 namespace v4l2
 {
@@ -61,20 +59,28 @@ namespace v4l2
 
             const std::string dev_folder = "/dev/";
 
-            for (const auto &entry : std::filesystem::directory_iterator(dev_folder))
+            DIR *dir;
+            struct dirent *ent;
+            if ((dir = opendir(dev_folder.c_str())) != NULL)
             {
-                std::string file_path = entry.path().string();
-                if (std::filesystem::is_symlink(entry))
+                while ((ent = readdir(dir)) != NULL)
                 {
-                    continue;
+                    std::string file = dev_folder + ent->d_name;
+
+                    const int fd = open(file.c_str(), O_RDWR);
+                    v4l2_capability capability;
+                    if (fd >= 0 && ioctl(fd, VIDIOC_QUERYCAP, &capability) >= 0)
+                    {
+                        files.push_back(file);
+                    }
+                    close(fd);
                 }
-                const int fd = open(file_path.c_str(), O_RDWR);
-                v4l2_capability capability;
-                if (fd >= 0 && ioctl(fd, VIDIOC_QUERYCAP, &capability) >= 0)
-                {
-                    files.push_back(file_path);
-                }
-                close(fd);
+                closedir(dir);
+            }
+            else
+            {
+                std::string msg = "Cannot list " + dev_folder + " contents!";
+                throw std::runtime_error(msg);
             }
 
             std::sort(files.begin(), files.end());
@@ -136,7 +142,8 @@ namespace v4l2
                 }
             }
 
-            for (const auto &row : device_map) {
+            for (const auto &row : device_map)
+            {
                 devices.emplace_back(row.second);
             }
         }
