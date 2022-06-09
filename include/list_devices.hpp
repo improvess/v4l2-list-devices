@@ -60,15 +60,20 @@ namespace v4l2
             {
                 while ((ent = readdir(dir)) != NULL)
                 {
-                    std::string file = dev_folder + ent->d_name;
+                    if (strlen(ent->d_name) > 5 && !strncmp("video", ent->d_name, 5)) {
+                        
+                        std::string file = dev_folder + ent->d_name;
 
-                    const int fd = open(file.c_str(), O_RDWR);
-                    v4l2_capability capability;
-                    if (fd >= 0 && ioctl(fd, VIDIOC_QUERYCAP, &capability) >= 0)
-                    {
-                        files.push_back(file);
+                        const int fd = open(file.c_str(), O_RDWR);
+                        v4l2_capability capability;
+                        if (fd >= 0) {
+                            if (ioctl(fd, VIDIOC_QUERYCAP, &capability) >= 0)
+                            {
+                                files.push_back(file);
+                            }
+                            close(fd);
+                        }
                     }
-                    close(fd);
                 }
                 closedir(dir);
             }
@@ -141,6 +146,7 @@ namespace v4l2
             {
                 devices.emplace_back(row.second);
             }
+            
         }
 
         inline DEVICE_INFO resolve_path(const std::string & target_usb_bus_id)
@@ -160,41 +166,43 @@ namespace v4l2
                 //duplicate entries for the same path requires full loop
                 while ((ent = readdir(dir)) != NULL)
                 {
-                    std::string file = dev_folder + ent->d_name;
+                    if (strlen(ent->d_name) > 5 && !strncmp("video", ent->d_name, 5)) {
+                        std::string file = dev_folder + ent->d_name;
 
-                    const int fd = open(file.c_str(), O_RDWR);
-                    v4l2_capability capability;
-                    if (fd >= 0)
-                    {
-                        int err = ioctl(fd, VIDIOC_QUERYCAP, &capability);
-                        if (err >= 0)
+                        const int fd = open(file.c_str(), O_RDWR);
+                        v4l2_capability capability;
+                        if (fd >= 0)
                         {
-                            std::string bus_info;
-                            struct media_device_info mdi;
-
-                            err = ioctl(fd, MEDIA_IOC_DEVICE_INFO, &mdi);
-                            if (!err)
+                            int err = ioctl(fd, VIDIOC_QUERYCAP, &capability);
+                            if (err >= 0)
                             {
-                                if (mdi.bus_info[0])
-                                    bus_info = mdi.bus_info;
+                                std::string bus_info;
+                                struct media_device_info mdi;
+
+                                err = ioctl(fd, MEDIA_IOC_DEVICE_INFO, &mdi);
+                                if (!err)
+                                {
+                                    if (mdi.bus_info[0])
+                                        bus_info = mdi.bus_info;
+                                    else
+                                        bus_info = std::string("platform:") + mdi.driver;
+                                }
                                 else
-                                    bus_info = std::string("platform:") + mdi.driver;
-                            }
-                            else
-                            {
-                                bus_info = reinterpret_cast<const char *>(capability.bus_info);
-                            }
+                                {
+                                    bus_info = reinterpret_cast<const char *>(capability.bus_info);
+                                }
 
-                            if (!bus_info.empty())
-                            {   
-                                if (bus_info.compare(target_usb_bus_id) == 0) {
+                                if (!bus_info.empty())
+                                {   
+                                    if (bus_info.compare(target_usb_bus_id) == 0) {
 
-                                    paths.push_back(file);
+                                        paths.push_back(file);
+                                    }
                                 }
                             }
+                            close(fd);
                         }
                     }
-                    close(fd);
                 }
                 if (!paths.empty()) {
                     std::sort(paths.begin(), paths.end());
